@@ -1,0 +1,1152 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+<script src='http://d3js.org/d3.v3.min.js'></script>
+
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap-theme.min.css">
+
+
+
+<style>
+
+.node{
+ fill: #FF5050;
+}
+
+.node text {
+  pointer-events: none;
+  font-size: 10px;
+  fill:#000000;
+}
+
+.link {
+    stroke: #C266E0;
+    stroke-opacity: .6;
+	stroke-width: 3;
+}
+
+</style>
+</head>
+
+
+<body>
+<div class="jumbotron">
+<div class="container-fluid">
+	<h2>Ola Neo4j!!</h2>
+	<!-- 
+	<blockquote class="blockquote-reverse">
+	  <p>I'm not interested in possible complexities. I regard song structure as a graph paper.</p>
+	  <footer>Brian Eno</footer>
+	</blockquote>
+	-->
+	<h3>Choose a Drilldown Option</h3>
+	
+	<div class="row">
+		<div id=mainForm class="col-md-12"> 
+			<form class="form-inline">
+				        <div class="form-group">
+						<select name="state" class="form-control" onchange="Hellojs(this.value)">
+						<option value="CA">Display Whole Graph</option>
+						
+						<option value="3">Find Total Number of Nodes</option>
+						<option value="4">Find Total Number of Relationships</option>
+						<option value="5">Filter Graph by Relationship Label</option>
+						<option value="6">Filter Graph by Relationship Properties</option>
+						<option value="7">Filter Graph by Node Properties</option>
+						</select>
+						</div>
+						
+				        <div id=UserInput class="form-group">
+						</div>
+						
+						<div id=dropdown1 class="form-group">
+						</div>
+						
+						<div id=dropdown2 class="form-group">
+						</div>
+						
+						<div id=propertyDiv class="form-group">
+						</div>
+						
+						<button type="button" id=goButton class="btn btn-primary">Go</button>
+						
+			</form><!-- form-inline -->
+		</div><!-- row col-md-12 -->
+	    <!-- <div id=UserInput class="col-md-2"></div> -->
+		
+		
+    </div> <!-- row div -->
+	
+	<div id=resultBoxDiv>
+	</div>
+
+</div> <!-- container-fluid div -->
+</div> <!-- jumbotron div -->
+
+
+<div id=graphArea></div>
+
+<div class="container-fluid">
+<!--<div id=graphArea></div>-->
+</div>
+
+<!-- Important - To put script at last in body for improved performance -->
+<script type="text/javascript">
+
+// global variables
+var meta_rel = [];
+var meta_prop_rel = [];
+var meta_prop_node = [];
+var meta_prop_node_name = [];
+var meta_prop_node_designation = [];
+var meta_prop_node_company = [];
+var meta_prop_node_MPC = [];
+var meta_prop_node_weight = [];
+
+function GetDynamicTextBox(value) {
+	return '<input type="text" class="form-control" id=propertyInput placeholder="Property Value">'
+}
+
+function GetDynamicResultBox(){
+
+	
+	return  '<form class="form-inline"><h3>Result</h3><input type="text" id=resultBox class="form-control" value=""></form>'
+}
+
+function UpdateResultBox(query){
+	console.log("In  UpdateResultBox");
+	
+	$('#goButton').unbind('click');
+	
+	$(function () {
+				
+				//Important - remove any previous binding of any click events on whole dom
+				//$('#goButton').unbind('click');
+				
+				console.log(query);
+				
+				$("#goButton").bind("click", function (){
+					
+					//console.log("In Submit Response");
+					//reset the dom to just what is needed for this option
+					
+					$("#resultBoxDiv").html("");
+					
+					neo4jApiConnect(query, success);
+	
+					var div = $("<div />");
+					div.html(GetDynamicResultBox());
+					$("#resultBoxDiv").append(div);
+					
+						
+				});
+				
+				
+				
+		});
+}
+
+function UpdateGraphDivOnly(query){
+	
+	console.log("In  UpdateGraphDivOnly");
+	
+	$('#goButton').unbind('click');
+	
+	$(function () {
+				
+				//Important - remove any previous binding of any click events on whole dom
+				//$('#goButton').unbind('click');
+				
+				console.log(query);
+				
+				$("#goButton").bind("click", function (){
+					
+					//console.log("In Submit Response");
+					//reset the dom to just what is needed for this option
+					console.log(query);
+					$("#resultBoxDiv").html("");
+					
+					neo4jApiConnect(query, success);
+					
+				});
+				
+				
+				
+		});
+}
+
+function pullPropertyValues(){
+	
+	
+	var query_str_1= '{"statements":[{"statement":" match n return distinct n.' + meta_prop_node[0] + ' order by n.' + meta_prop_node[0] + '","resultDataContents":["graph", "row"]}]}'
+	var query_1 = JSON.parse(query_str_1);
+	console.log(query_str_1);
+	neo4jApiConnect(query_1, getPropertyValuesName);
+	
+	var query_str_2= '{"statements":[{"statement":" match n return distinct n.' + meta_prop_node[1] + ' order by n.' + meta_prop_node[1] + '","resultDataContents":["graph", "row"]}]}'
+	var query_2 = JSON.parse(query_str_2);
+	console.log(query_str_2);
+	neo4jApiConnect(query_2, getPropertyValuesDesignation);
+	
+	var query_str_3= '{"statements":[{"statement":" match n return distinct n.' + meta_prop_node[2] + ' order by n.' + meta_prop_node[2] + '","resultDataContents":["graph", "row"]}]}'
+	var query_3 = JSON.parse(query_str_3);
+	console.log(query_str_3);
+	neo4jApiConnect(query_3, getPropertyValuesCompany);
+	
+	var query_str_4= '{"statements":[{"statement":" match (n)-[r]-() return distinct r.' + meta_prop_rel[0] + ' order by r.' + meta_prop_rel[0] + '","resultDataContents":["graph", "row"]}]}'
+	var query_4 = JSON.parse(query_str_4);
+	console.log(query_str_4);
+	neo4jApiConnect(query_4, getPropertyValuesWeight);
+	
+	var query_str_5= '{"statements":[{"statement":" match (n)-[r]-() return distinct r.' + meta_prop_rel[1] + ' order by r.' + meta_prop_rel[1] + '","resultDataContents":["graph", "row"]}]}'
+	var query_5 = JSON.parse(query_str_5);
+	console.log(query_str_5);
+	neo4jApiConnect(query_5, getPropertyValuesMPC);
+	
+}
+
+function success(){
+	console.log("Done with neo4jApiConnect");
+}
+
+function getPropertyValuesName(result_from_neo4japi){
+	//console.log("In getPropertyValues");
+	//console.log(result_from_neo4japi);
+	
+	//var get_all_rel = {"statements":[{"statement":"match n-[r]-() return distinct type(r)","resultDataContents":["graph", "row"]}]};
+	var data = result_from_neo4japi;
+	
+    console.log(data);
+	
+	
+	
+	data.results[0].data.forEach(function(elem) {
+	
+		console.log(elem.row[0]);
+		meta_prop_node_name.push(elem.row[0]);
+
+	})
+	
+	console.log(meta_prop_node_name);
+	
+}
+
+function getPropertyValuesDesignation(result_from_neo4japi){
+
+	//console.log("In getPropertyValues");
+	//console.log(result_from_neo4japi);
+	
+	//var get_all_rel = {"statements":[{"statement":"match n-[r]-() return distinct type(r)","resultDataContents":["graph", "row"]}]};
+	var data = result_from_neo4japi;
+	
+    console.log(data);
+	
+	
+	
+	data.results[0].data.forEach(function(elem) {
+	
+		console.log(elem.row[0]);
+		meta_prop_node_designation.push(elem.row[0]);
+
+	})
+	
+	console.log(meta_prop_node_designation);
+}
+
+function getPropertyValuesCompany(result_from_neo4japi){
+
+	//console.log("In getPropertyValues");
+	//console.log(result_from_neo4japi);
+	
+	//var get_all_rel = {"statements":[{"statement":"match n-[r]-() return distinct type(r)","resultDataContents":["graph", "row"]}]};
+	var data = result_from_neo4japi;
+	
+    console.log(data);
+	
+	data.results[0].data.forEach(function(elem) {
+	
+		console.log(elem.row[0]);
+		meta_prop_node_company.push(elem.row[0]);
+
+	})
+	
+	console.log(meta_prop_node_company);
+}
+
+function getPropertyValuesMPC(result_from_neo4japi){
+	//console.log("In getPropertyValues");
+	//console.log(result_from_neo4japi);
+	
+	//var get_all_rel = {"statements":[{"statement":"match n-[r]-() return distinct type(r)","resultDataContents":["graph", "row"]}]};
+	var data = result_from_neo4japi;
+	
+    console.log(data);
+	
+	
+	
+	data.results[0].data.forEach(function(elem) {
+	
+		console.log(elem.row[0]);
+		meta_prop_node_MPC.push(elem.row[0]);
+
+	})
+	
+	console.log(meta_prop_node_MPC);
+	
+}
+
+function getPropertyValuesWeight(result_from_neo4japi){
+
+	//console.log("In getPropertyValues");
+	//console.log(result_from_neo4japi);
+	
+	//var get_all_rel = {"statements":[{"statement":"match n-[r]-() return distinct type(r)","resultDataContents":["graph", "row"]}]};
+	var data = result_from_neo4japi;
+	
+    console.log(data);
+	
+	
+	
+	data.results[0].data.forEach(function(elem) {
+	
+		console.log(elem.row[0]);
+		meta_prop_node_weight.push(elem.row[0]);
+
+	})
+	
+	console.log(meta_prop_node_weight);
+}
+
+function getMetadataRel(result_from_neo4japi){
+	
+	console.log("In getMetadataRel");
+	
+	var data = result_from_neo4japi;
+	
+    //console.log(data);
+	
+	data.results[0].data.forEach(function(row) {
+		meta_rel.push(row.row[0]);
+	})
+	
+}
+
+
+function getMetadataPropNode(result_from_neo4japi){
+	
+	console.log("In getMetadataPropNode");
+	console.log(result_from_neo4japi);
+	
+	//var get_all_rel = {"statements":[{"statement":"match n-[r]-() return distinct type(r)","resultDataContents":["graph", "row"]}]};
+	var data = result_from_neo4japi;
+	
+    console.log(data);
+	// very Important -pulling node properties details
+	//pullPropertyValues();
+
+	data.results[0].data[0].row.forEach(function(elem) {
+		
+		//console.log(row.row[0]);
+		elem.forEach(function(row) {
+			meta_prop_node.push(row);
+		})
+		
+	})
+	
+	console.log(meta_prop_node);
+	
+}
+
+function getMetadataPropRel(result_from_neo4japi){
+	
+	console.log("In getMetadataPropRel");
+	console.log(result_from_neo4japi);
+	
+	//var get_all_rel = {"statements":[{"statement":"match n-[r]-() return distinct type(r)","resultDataContents":["graph", "row"]}]};
+	var data = result_from_neo4japi;
+	
+    console.log(data);
+	
+	
+
+	data.results[0].data[0].row.forEach(function(elem) {
+		
+		//console.log(row.row[0]);
+		elem.forEach(function(row) {
+			meta_prop_rel.push(row);
+		})
+		
+	})
+	
+	console.log(meta_prop_rel);
+	
+}
+
+
+
+function getMetadataDriver(){
+
+query_1 = {"statements":[{"statement":"MATCH (n) OPTIONAL MATCH (n)-[r]-() RETURN distinct keys(r)","resultDataContents":["graph", "row"]}]};
+
+query_2 = {"statements":[{"statement":"MATCH (n) OPTIONAL MATCH (n)-[r]-() RETURN distinct keys(n)","resultDataContents":["graph", "row"]}]};
+
+query_3 = {"statements":[{"statement":"match n-[r]-() return distinct type(r)","resultDataContents":["graph", "row"]}]};
+
+
+
+neo4jApiConnect(query_1, getMetadataPropRel);
+
+neo4jApiConnect(query_2, getMetadataPropNode);
+
+neo4jApiConnect(query_3, getMetadataRel);
+
+//console.log(meta_res); 
+
+//return meta_res;
+
+}
+
+
+function makeDropdown(listData, id){
+	
+	/* logic from dynamic drop down list */
+    // console.log("At dynamic drop down list");
+   
+    var listItemsElements  = listData;
+	console.log(listItemsElements);
+	
+	var listItems= "";
+	//console.log("exampleNodes.length");
+	
+	for (var i = 0; i < listItemsElements.length; i++){
+		listItems+= "<option value='" + listItemsElements[i] + "'>" + listItemsElements[i] + "</option>";
+	}
+	
+	//console.log(listItems);
+	var dropdown =  "<select id=" + id + " class='form-control'>" + listItems + "</select>";
+	
+	return dropdown;
+}
+
+function dataList(option){
+  
+  console.log("In dataList");
+  
+  var listItemsElements="";
+  
+  var listItems="";
+  
+  console.log(option);
+  
+  if(option == "name"){
+	var listItemsElements = meta_prop_node_name;
+  } else if (option == "designation"){
+	var listItemsElements = meta_prop_node_designation;
+  } else if (option == "company"){
+	var listItemsElements = meta_prop_node_company;
+  } else if (option == "MPC"){
+	var listItemsElements = meta_prop_node_MPC;
+  } else if (option == "weight"){
+	var listItemsElements = meta_prop_node_weight;
+  }
+  
+  console.log(listItemsElements);
+  //console.log(meta_prop_node_val);
+  
+  for (var i = 0; i < listItemsElements.length; i++){
+	listItems+= "<option value='" + listItemsElements[i] + "'>" + listItemsElements[i] + "</option>";
+   }
+   
+   //console.log(listItems);
+   
+   var dataL =  "<dataList id='dataL'>"+ listItems + "</dataList>"
+   
+   //console.log(dataL);
+   
+   var dataListInputTag =  "<input id=propertyInput class='form-control dd' type='text' list='dataL' placeholder='Type In the Property'>" + dataL + "</input>";
+   
+   console.log(dataListInputTag);
+	
+   return dataListInputTag;
+  
+}
+
+function ddordl(option){
+
+if(option == "name"){
+
+	$("#propertyDiv").html('');
+	var div = $("<div />");
+    div.html(dataList("name"));
+    $("#propertyDiv").append(div);
+	
+	
+  } else if (option == "designation"){
+	
+	$("#propertyDiv").html('');
+	var div = $("<div />");
+    div.html(makeDropdown(meta_prop_node_designation, 'propertyInput'));
+    $("#propertyDiv").append(div);
+	
+  } else if (option == "company"){
+	
+	$("#propertyDiv").html('');
+	var div = $("<div />");
+    div.html(makeDropdown(meta_prop_node_company, 'propertyInput'));
+    $("#propertyDiv").append(div);
+	
+	
+  } else if (option == "MPC"){
+	
+	$("#propertyDiv").html('');
+	var div = $("<div />");
+    div.html(makeDropdown(meta_prop_node_MPC,'propertyInput'));
+    $("#propertyDiv").append(div);
+	
+	
+  } else if (option == "weight"){
+	
+	$("#propertyDiv").html('');
+	var div = $("<div />");
+    div.html(makeDropdown(meta_prop_node_weight, 'propertyInput'));
+    $("#propertyDiv").append(div);
+ }
+ 
+} 
+
+
+function Hellojs(period){
+	
+	// vip vip vip 
+	
+	if(meta_prop_node_name.length==0){
+	pullPropertyValues();
+	}
+	
+	
+	
+	console.log("Hello from hellojs");
+	
+	if (period=="CA") { 
+		
+		// reset the dom to just what is needed for this option
+		$("#UserInput").html("");
+		$("#resultBoxDiv").html("");
+		$("#dropdown1").html("");
+		$("#dropdown2").html("");
+		$("#propertyDiv").html("");
+		$('#goButton').unbind('click');
+		
+		var query= {"statements":[{"statement":"match n-[r]-() return distinct n, r","resultDataContents":["graph","row"]}]};
+		UpdateGraphDivOnly(query);
+		
+	
+	} else if (period=="VA"){
+	
+	    // reset the dom to just what is needed for this option
+		$("#UserInput").html("");
+		$("#resultBoxDiv").html("");
+		$("#dropdown1").html("");
+		$("#dropdown2").html("");
+		$("#propertyDiv").html("");
+		$('#goButton').unbind('click');
+		
+		var div = $("<div />");
+        div.html(makeDropdown(meta_prop_rel, "sec_dd_1"));
+        $("#dropdown1").append(div);
+		
+		var dObj = {};
+		dObj['sec_dd_1'] = meta_prop_rel[0]; 
+		
+		$('#mainForm').find('#sec_dd_1, #sec_dd_2, #propertyInput').on('change', function (event){
+
+			
+			//dataList();
+			
+			$("#resultBoxDiv").html("");
+			
+			//this now refers to the "changed" element
+			var name  = this.id, value = this.value;
+			console.log(value)
+			
+			//set the key as the name of the input, and the value as the value of the input
+			dObj[name] = value;
+			/*
+			var div = $("<div />");
+			div.html(dataList(GetDynamicTextBox));
+			$("#propertyDiv").append(div);
+			*/
+			dObj['propertyInput'] = $('#propertyInput').val();
+			
+			console.log(dObj);
+			
+			//console.log(dObj['sec_dd_1']);
+			//console.log(dObj['sec_dd_2']);
+			
+			var query_str = '{"statements":[{"statement":"match (n)-[r:' + 
+			
+			dObj['sec_dd_1'] + 
+			
+			']-() return count(dist(r))","resultDataContents":["graph", "row"]}]}';
+			
+			console.log(query_str);
+			
+			var query = JSON.parse(query_str);
+			
+			//console.log(query);
+			
+			UpdateResultBox(query);
+			
+			
+
+		});
+		
+		
+		
+	
+	} else if (period=="3"){
+		
+		console.log("3");
+		// reset the dom to just what is needed for this option
+		$("#resultBoxDiv").html("");
+		$("#UserInput").html("");
+		$("#dropdown1").html("");
+		$("#dropdown2").html("");
+		$("#propertyDiv").html("");
+		$('#goButton').unbind('click');
+		
+		// query to count total number of nodes in neo4j database
+		var query= {"statements":[{"statement":"START n=node(*) return count(n)","resultDataContents":["graph", "row"]}]};
+		
+		UpdateResultBox(query);
+	
+	} else if (period=="4"){
+		console.log("4");
+		// reset the dom to just what is needed for this option
+		$("#resultBoxDiv").html("");
+		$("#UserInput").html("");
+		$("#dropdown1").html("");
+		$("#dropdown2").html("");
+		$("#propertyDiv").html("");
+		$('#goButton').unbind('click');
+		
+		// query to count total number of relationships in neo4j database
+		var query= {"statements":[{"statement":"START r=rel(*) return count(r)","resultDataContents":["graph", "row"]}]};
+		
+		UpdateResultBox(query);
+	
+	} else if (period=="5"){
+		console.log("5");
+		// reset the dom to just what is needed for this option
+		$("#resultBoxDiv").html("");
+		$("#UserInput").html("");
+		$("#dropdown1").html("");
+		$("#dropdown2").html("");
+		$("#propertyDiv").html("");
+		$('#goButton').unbind('click');
+		
+		
+		
+		var div = $("<div />");
+        div.html(makeDropdown(meta_rel, "sec_dd"));
+        $("#dropdown1").append(div);
+		
+		//default Go button event handling
+		var query_str= '{"statements":[{"statement":" match n-[r:' + meta_rel[0] + ']-() return *","resultDataContents":["graph", "row"]}]}'
+		var query = JSON.parse(query_str);
+	    UpdateGraphDivOnly(query);
+		
+		$("#sec_dd").on('change', function(event) {
+		
+			console.log("dropdown change");
+			//console.log(this.value);
+			//var option = meta_rel[0];
+			var option = this.value;
+			
+			console.log(this.value);
+			
+			if(option == meta_rel[0]){
+					
+				console.log(meta_rel[0]);
+				
+				// query to count total number of relationships in neo4j database
+				var query_str= '{"statements":[{"statement":" match n-[r:' + meta_rel[0] + ']-() return *","resultDataContents":["graph", "row"]}]}'
+				var query = JSON.parse(query_str);
+	
+				UpdateGraphDivOnly(query);
+					
+			} 
+			
+			else if(option == meta_rel[1]){
+				
+				console.log(meta_rel[1]);
+				
+				// query to count total number of relationships in neo4j database
+				var query_str = '{"statements":[{"statement":" match n-[r:' + meta_rel[1] +']-() return * ","resultDataContents":["graph", "row"]}]}'
+				var query = JSON.parse(query_str);
+				
+				UpdateGraphDivOnly(query);
+		    }
+			
+		});
+		
+		
+	
+	} else if (period=="6"){
+		console.log("6");
+		// reset the dom to just what is needed for this option
+		$("#resultBoxDiv").html("");
+		$("#UserInput").html("");
+		$("#dropdown1").html("");
+		$("#dropdown2").html("");
+		$("#propertyDiv").html("");
+		$('#goButton').unbind('click');
+		
+		
+		
+		var div = $("<div />");
+        div.html(makeDropdown(meta_rel, "sec_dd_1"));
+        $("#dropdown1").append(div);
+		
+		var div = $("<div />");
+        div.html(makeDropdown(meta_prop_rel, "sec_dd_2"));
+        $("#dropdown2").append(div);
+	
+		//create object to pass for both dropdowns and 
+		var dObj = {};
+		dObj['sec_dd_1'] = meta_rel[0]; 
+		dObj['sec_dd_2'] = meta_prop_rel[0];
+		dObj['propertyInput'] = "";
+		
+		ddordl(dObj['sec_dd_2']);
+		
+		$('#mainForm').find('#sec_dd_1, #sec_dd_2').on('change', function (event){
+
+
+			//this now refers to the "changed" element
+			var name  = this.id, value = this.value;
+			console.log(value)
+			
+			//set the key as the name of the input, and the value as the value of the input
+			dObj[name] = value;
+			
+			ddordl(dObj['sec_dd_2']);
+			
+		});
+
+		
+		$(' #sec_dd_1, #sec_dd_2, #propertyDiv').bind('change', function(event) {
+
+			//console.log("live working");
+			
+			dObj['propertyInput'] = $("#propertyInput option:selected").text();
+			
+			console.log(dObj);
+			
+			var query_str = '{"statements":[{"statement":"match (n)-[r:' + 
+
+			dObj['sec_dd_1'] + 
+
+			']-() where r.' + 
+
+			dObj['sec_dd_2'] + 
+
+			" = '" + dObj['propertyInput']  + "'" +
+			' return *","resultDataContents":["graph", "row"]}]}';
+
+			console.log(query_str);
+			
+			var query = JSON.parse(query_str);
+			UpdateGraphDivOnly(query);
+			
+		} )
+
+
+		//dObj['propertyInput'] = $('#propertyInput option:selected').text();
+
+		//console.log(dObj);
+
+		//console.log(dObj['sec_dd_1']);
+		//console.log(dObj['sec_dd_2']);
+
+		// Handle float and numeric datasets before generating query
+
+		//ddordl(dObj['propertyInput']);
+
+		console.log( 
+		!isNaN(dObj['propertyInput'])
+		);
+
+		
+	
+		
+		
+	
+	}
+	
+	else if (period=="7"){
+		console.log("7");
+		// reset the dom to just what is needed for this option
+		$("#resultBoxDiv").html("");
+		$("#UserInput").html("");
+		$("#dropdown1").html("");
+		$("#dropdown2").html("");
+		$("#propertyDiv").html("");
+		$('#goButton').unbind('click');
+		
+		
+		
+		var div = $("<div />");
+        div.html(makeDropdown(meta_prop_node, "sec_dd_1"));
+        $("#dropdown1").append(div);
+
+		/*
+		var div = $("<div />");
+        div.html(GetDynamicTextBox());
+        $("#propertyDiv").append(div);
+		*/
+		
+		//create object to pass for both dropdowns and 
+		var dObj = {};
+		dObj['sec_dd_1'] = meta_prop_node[0]; 
+		
+		dObj['propertyInput'] = "";
+		
+		ddordl(dObj['sec_dd_1']);
+		
+		$('#mainForm').find('#sec_dd_1').on('change', function (event){
+		
+			//this now refers to the "changed" element
+			var name  = this.id, value = this.value;
+			console.log(value)
+			
+			//set the key as the name of the input, and the value as the value of the input
+			dObj[name] = value;
+			
+			ddordl(dObj['sec_dd_1']);
+
+		});
+		
+		
+		$('#mainForm').find('#sec_dd_1, #propertyDiv').on('change', function (event){
+			
+			if ( $( "#propertyInput" ).is( ".dd" ) ) {
+				console.log("Voila");
+				dObj['propertyInput'] = $('#propertyInput').val();
+			} else {
+				dObj['propertyInput'] = $("#propertyInput option:selected").text();
+			}
+			
+			console.log(dObj);
+			
+			//console.log(dObj['sec_dd_1']);
+			//console.log(dObj['sec_dd_2']);
+			
+			var query_str = '{"statements":[{"statement":"match (n) -[r]-() where n.' + 
+			
+			dObj['sec_dd_1'] + 
+			
+			" = '" + dObj['propertyInput']  + "'" +
+			' return *","resultDataContents":["graph", "row"]}]}';
+			
+			console.log(query_str);
+			
+			var query = JSON.parse(query_str);
+			
+			//console.log(query);
+			
+			UpdateGraphDivOnly(query);
+			
+
+		});
+		
+		
+		
+	
+	}
+	
+	
+	
+	
+	
+	
+	
+    
+}
+
+
+// Important - neo4jApiConnect is a callback function to handle async data transfers
+// Read this if you don't know what callback function are - http://stackoverflow.com/questions/14220321/how-to-return-the-response-from-an-asynchronous-call
+function neo4jApiConnect(query, callback){
+	
+	console.log(query);
+	// The query
+	//var query= {"statements":[{"statement":"MATCH p=(n)-->(m)<--(k),(n)--(k) RETURN p","resultDataContents":["graph","row"]}]};
+	//var query= {"statements":[{"statement":"match n-[r]-() return distinct n, r","resultDataContents":["graph","row"]}]};
+
+	//the helper function provided by neo4j documents
+	function idIndex(a,id) {
+		for (var i=0;i<a.length;i++) {
+			if (a[i].id == id) return i;}
+		return null;
+	}
+
+
+	 
+	// Basic authentication helper function
+	function make_base_auth(user, password) {
+	  var tok = user + ':' + password;
+	  var hash = btoa(tok);
+	  //console.log(hash);
+	  return "Basic " + hash;
+	}
+
+	make_base_auth("neo4j", "nxihtPMt2w")
+	
+	
+
+	// jQuery ajax call
+    var request = $.ajax({
+		type: "POST",
+		url: "http://localhost:7474/db/data/transaction/commit",
+		
+		accepts: { json: "application/json" },
+		dataType: "json",
+		contentType:"application/json",
+		data: JSON.stringify(query),
+		
+		headers: {
+		"Authorization": "Basic " + btoa("neo4j" + ":" + "nxihtPMt2w")
+		},
+		
+		/*
+		success: function(){
+			alert('Thanks for your comment!'); 
+		}
+		*/	
+		
+		//now pass a callback to success to do something with the data
+		success: function (data) {
+		
+			var nodes = [];
+			var links = [];
+			
+			console.log("In Success");
+			//console.log(JSON.stringify(data));
+			
+			// Variable to store numerical queries result
+			var result = data;
+			//console.log(result);
+			
+			// very Important - callback zone - Idea is provide result to different helper functions like getMetadata
+			callback(result);
+			
+			var nodes_rel_count = data.results[0].data[0].row[0];
+			//console.log(nodes_rel_count);
+			
+			// very Important - Updating the resultBox with the output
+			$("#resultBox").val(nodes_rel_count);
+			
+			// parsing the output of neo4j rest api
+			data.results[0].data.forEach(function (row) {
+				row.graph.nodes.forEach(function (n) {
+					if (idIndex(nodes,n.id) == null){
+						nodes.push({id:n.id,label:n.labels[0],title:n.properties.name});
+					}
+				});
+				links = links.concat( row.graph.relationships.map(function(r) {
+					// the neo4j documents has an error : replace start with source and end with target
+					return {source:idIndex(nodes,r.startNode),target:idIndex(nodes,r.endNode),type:r.type};
+				}));
+			});
+			
+			//var edges = links;	
+			var graph_nj = {nodes:nodes, links:links};
+			//console.log(JSON.stringify(graph_nj));
+			
+			drawD3Svg(graph_nj);
+
+		}
+
+		
+		
+	});
+	
+}
+
+
+function drawD3Svg(graph_nj){
+	
+	var width = 1348;
+	var height = 700;
+
+		
+	//Set up the force layout
+	var force = d3.layout.force()
+		.charge(-1000)
+		.linkDistance(50)
+		.size([width, height]);
+
+	// Important - Clear div graphArea before we draw using jQuery
+	$("#graphArea").html("");
+	
+	//Append a SVG to the body of the html page. Assign this SVG as an object to svg
+	var svg = d3.select("#graphArea").append("svg")
+		.attr("width", width)
+		.attr("height", height)
+
+	var graph = JSON.parse(JSON.stringify(graph_nj));
+	//console.log(graph);
+
+	//Creates the graph data structure out of the json data
+	force.nodes(graph.nodes)
+		.links(graph.links)
+		.start();
+		
+	//Set up the colour scale
+	var color = d3.scale.category20();
+
+	//Create all the line svgs but without locations yet
+	var link = svg.selectAll(".link")
+		.data(graph.links)
+		.enter().append("line")
+		.attr("class", "link")
+		
+
+	//Do the same with the circles for the nodes 
+	var node = svg.selectAll(".node")
+		.data(graph.nodes)
+		.enter().append("g")
+		.attr("class", "node")
+		.call(force.drag)
+		.on('dblclick', connectedNodes); //Added code
+		
+	node.append("circle")
+		.attr("r", 20)/*
+		.style("fill", function (d) {
+			return "#9AA1AC";
+		})*/
+	
+	node.append("text")
+		.attr("dx", 15)
+		.attr("dy", ".35em")
+		.text(function(d) { return d.title })/*
+		.style("black");*/
+
+
+	//Now we are giving the SVGs co-ordinates - the force layout is generating the co-ordinates which this code is using to update the attributes of the SVG elements
+	force.on("tick", function () {
+		link.attr("x1", function (d) {
+			return d.source.x;
+		})
+			.attr("y1", function (d) {
+			return d.source.y;
+		})
+			.attr("x2", function (d) {
+			return d.target.x;
+		})
+			.attr("y2", function (d) {
+			return d.target.y;
+		});
+
+		//Changed
+		
+		d3.selectAll("circle").attr("cx", function (d) {
+			return d.x;
+		})
+			.attr("cy", function (d) {
+			return d.y;
+		});
+
+		d3.selectAll("text").attr("x", function (d) {
+			return d.x;
+		})
+			.attr("y", function (d) {
+			return d.y;
+		});
+
+		//End Changed
+
+	});
+	
+	//---Insert------- //Highlight one degree connection
+
+	//Toggle stores whether the highlighting is on
+	var toggle = 0;
+
+	//Create an array logging what is connected to what
+	var linkedByIndex = {};
+	for (i = 0; i < graph.nodes.length; i++) {
+		linkedByIndex[i + "," + i] = 1;
+	};
+	graph.links.forEach(function (d) {
+		linkedByIndex[d.source.index + "," + d.target.index] = 1;
+	});
+
+	//This function looks up whether a pair are neighbours  
+	function neighboring(a, b) {
+		return linkedByIndex[a.index + "," + b.index];
+	}
+
+	function connectedNodes() {
+
+		if (toggle == 0) {
+			//Reduce the opacity of all but the neighbouring nodes
+			d = d3.select(this).node().__data__;
+			node.style("opacity", function (o) {
+				return neighboring(d, o) | neighboring(o, d) ? 1 : 0.1;
+			});
+			
+			link.style("opacity", function (o) {
+				return d.index==o.source.index | d.index==o.target.index ? 1 : 0.1;
+			});
+			
+			//Reduce the op
+			
+			toggle = 1;
+		} else {
+			//Put them back to opacity=1
+			node.style("opacity", 1);
+			link.style("opacity", 1);
+			toggle = 0;
+		}
+
+	}
+
+			
+}
+
+
+/* All initializations here */
+function init(){
+	
+	// Pull meta data from database
+	getMetadataDriver();
+	
+	// set Go button event handler to load entire graph which is default option of main dropdown
+	var query_init= {"statements":[{"statement":"match n-[r]-() return distinct n, r","resultDataContents":["graph","row"]}]};
+	UpdateGraphDivOnly(query_init);
+	
+	
+
+}
+
+/* Start the show */
+init();
+
+</script>
+
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+
+
+</body>
+
+
+</html>
