@@ -63,7 +63,8 @@
 						<option value="8">Filter Incoming Connections</option>
 						<option value="9">Filter Outgoing Connections</option>
 						<option value="10">Filter Graph by Node Property and Relationship Label</option>
-						
+						<option value="11">Find Path Between Two People</option>
+						<option value="12">Find Shortest Path Between Two People</option>
 						</select>
 						</div>
 						
@@ -77,6 +78,9 @@
 						</div>
 						
 						<div id=propertyDiv class="form-group">
+						</div>
+						
+						<div id=propertyDivSec class="form-group">
 						</div>
 						
 						<button type="button" id=goButton class="btn btn-primary">Go</button>
@@ -482,6 +486,51 @@ function dataList(option){
   
 }
 
+
+function dataListSec(option){
+  
+  console.log("In dataListSec");
+  
+  var listItemsElements="";
+  
+  var listItems="";
+  
+  console.log(option);
+  
+  if(option == "name"){
+	var listItemsElements = meta_prop_node_name;
+  } else if (option == "designation"){
+	var listItemsElements = meta_prop_node_designation;
+  } else if (option == "company"){
+	var listItemsElements = meta_prop_node_company;
+  } else if (option == "MPC"){
+	var listItemsElements = meta_prop_node_MPC;
+  } else if (option == "weight"){
+	var listItemsElements = meta_prop_node_weight;
+  }
+  
+  console.log(listItemsElements);
+  //console.log(meta_prop_node_val);
+  
+  for (var i = 0; i < listItemsElements.length; i++){
+	listItems+= "<option value='" + listItemsElements[i] + "'>" + listItemsElements[i] + "</option>";
+   }
+   
+   //console.log(listItems);
+   
+   var dataL =  "<dataList id='dataL'>"+ listItems + "</dataList>"
+   
+   //console.log(dataL);
+   
+   var dataListInputTag =  "<input id=propertyInputSec class='form-control dd' type='text' list='dataL' placeholder='Type In the Property'>" + dataL + "</input>";
+   
+   console.log(dataListInputTag);
+	
+   return dataListInputTag;
+  
+}
+
+
 function ddordl(option){
 
 if(option == "name"){
@@ -546,6 +595,7 @@ function Hellojs(period){
 		$("#dropdown1").html("");
 		$("#dropdown2").html("");
 		$("#propertyDiv").html("");
+		$("#propertyDivSec").html("");
 		$('#goButton').unbind('click');
 		
 		var query= {"statements":[{"statement":"match n-[r]-() return distinct n, r","resultDataContents":["graph","row"]}]};
@@ -560,6 +610,7 @@ function Hellojs(period){
 		$("#dropdown1").html("");
 		$("#dropdown2").html("");
 		$("#propertyDiv").html("");
+		$("#propertyDivSec").html("");
 		$('#goButton').unbind('click');
 		
 		var div = $("<div />");
@@ -624,6 +675,7 @@ function Hellojs(period){
 		$("#dropdown1").html("");
 		$("#dropdown2").html("");
 		$("#propertyDiv").html("");
+		$("#propertyDivSec").html("");
 		$('#goButton').unbind('click');
 		
 		// query to count total number of nodes in neo4j database
@@ -639,6 +691,7 @@ function Hellojs(period){
 		$("#dropdown1").html("");
 		$("#dropdown2").html("");
 		$("#propertyDiv").html("");
+		$("#propertyDivSec").html("");
 		$('#goButton').unbind('click');
 		
 		// query to count total number of relationships in neo4j database
@@ -654,6 +707,7 @@ function Hellojs(period){
 		$("#dropdown1").html("");
 		$("#dropdown2").html("");
 		$("#propertyDiv").html("");
+		$("#propertyDivSec").html("");
 		$('#goButton').unbind('click');
 		
 		
@@ -711,6 +765,7 @@ function Hellojs(period){
 		$("#dropdown1").html("");
 		$("#dropdown2").html("");
 		$("#propertyDiv").html("");
+		$("#propertyDivSec").html("");
 		$('#goButton').unbind('click');
 		
 		
@@ -792,6 +847,7 @@ function Hellojs(period){
 		$("#dropdown1").html("");
 		$("#dropdown2").html("");
 		$("#propertyDiv").html("");
+		$("#propertyDivSec").html("");
 		$('#goButton').unbind('click');
 		
 		
@@ -874,6 +930,7 @@ function Hellojs(period){
 		$("#dropdown1").html("");
 		$("#dropdown2").html("");
 		$("#propertyDiv").html("");
+		$("#propertyDivSec").html("");
 		$('#goButton').unbind('click');
 		
 		
@@ -920,6 +977,7 @@ function Hellojs(period){
 		$("#dropdown1").html("");
 		$("#dropdown2").html("");
 		$("#propertyDiv").html("");
+		$("#propertyDivSec").html("");
 		$('#goButton').unbind('click');
 		
 		
@@ -965,6 +1023,7 @@ function Hellojs(period){
 		$("#dropdown1").html("");
 		$("#dropdown2").html("");
 		$("#propertyDiv").html("");
+		$("#propertyDivSec").html("");
 		$('#goButton').unbind('click');
 		$("#propertyDiv").unbind("change");
 		
@@ -1038,7 +1097,121 @@ function Hellojs(period){
 		
 	}
 	
+	else if (period=="11"){
+		console.log("11");
+		// reset the dom to just what is needed for this option
+		$("#resultBoxDiv").html("");
+		$("#UserInput").html("");
+		$("#dropdown1").html("");
+		$("#dropdown2").html("");
+		$("#propertyDiv").html("");
+		$("#propertyDivSec").html("");
+		$('#goButton').unbind('click');
+		
+		
+		
+		var div = $("<div />");
+        div.html(dataList("name"));
+        $("#propertyDiv").append(div);
+		
+		var div = $("<div />");
+        div.html(dataListSec("name"));
+        $("#propertyDivSec").append(div);
+
+		//create object to pass for both dropdowns and 
+		var dObj = {};
+		//dObj['sec_dd_1'] = meta_prop_node[0]; 
+		
+		dObj['propertyInput'] = "";
+		
+		dObj['propertyInputSec'] = "";
+		
+		$('#mainForm').find('#propertyDiv, #propertyDivSec').on('change', function (event){
+		
+			dObj['propertyInput'] = $('#propertyInput').val();
+			dObj['propertyInputSec'] = $('#propertyInputSec').val();
+			
+			console.log(dObj['propertyInput']);
+			
+			console.log(dObj['propertyInputSec']);
+			
+			var query_str = '{"statements":[{"statement":"match (a) - [r *..] -> (b) where a.name' +
+			
+			" = '" + dObj['propertyInput']  + "'" + 
+			
+			' and b.name' + " = '" + dObj['propertyInputSec']  + "'" + 
+			
+			' return *","resultDataContents":["graph", "row"]}]}';
+			
+			console.log(query_str);
+			
+			var query = JSON.parse(query_str);
+			
+			//console.log(query);
+			
+			UpdateGraphDivOnly(query);
+			
+		});
+		
+	}
 	
+	else if (period=="12"){
+		console.log("12");
+		// reset the dom to just what is needed for this option
+		$("#resultBoxDiv").html("");
+		$("#UserInput").html("");
+		$("#dropdown1").html("");
+		$("#dropdown2").html("");
+		$("#propertyDiv").html("");
+		$("#propertyDivSec").html("");
+		$('#goButton').unbind('click');
+		
+		
+		
+		var div = $("<div />");
+        div.html(dataList("name"));
+        $("#propertyDiv").append(div);
+		
+		var div = $("<div />");
+        div.html(dataListSec("name"));
+        $("#propertyDivSec").append(div);
+
+		//create object to pass for both dropdowns and 
+		var dObj = {};
+		//dObj['sec_dd_1'] = meta_prop_node[0]; 
+		
+		dObj['propertyInput'] = "";
+		
+		dObj['propertyInputSec'] = "";
+		
+		$('#mainForm').find('#propertyDiv, #propertyDivSec').on('change', function (event){
+		
+			dObj['propertyInput'] = $('#propertyInput').val();
+			dObj['propertyInputSec'] = $('#propertyInputSec').val();
+			
+			console.log(dObj['propertyInput']);
+			
+			console.log(dObj['propertyInputSec']);
+			
+			var query_str = '{"statements":[{"statement":"match shortestPath( (a) - [r *..] -> (b) ) where a.name' +
+			
+			" = '" + dObj['propertyInput']  + "'" + 
+			
+			' and b.name' + " = '" + dObj['propertyInputSec']  + "'" + 
+			
+			' return *","resultDataContents":["graph", "row"]}]}';
+			
+			console.log(query_str);
+			
+			var query = JSON.parse(query_str);
+			
+			//console.log(query);
+			
+			UpdateGraphDivOnly(query);
+			
+		});
+		
+	}
 	
 	
 	
