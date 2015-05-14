@@ -220,8 +220,15 @@ function pullPropertyValues(){
 	
 }
 
-function success(){
+function success(resultFromNeo4jApi){
+
 	console.log("Done with neo4jApiConnect");
+	var data = resultFromNeo4jApi;
+	var nodes_rel_count = data.results[0].data[0].row[0];
+	
+	if(length(nodes_rel_count) === 0)  {
+		console.log("No Data Found");
+	}	
 }
 
 function getPropertyValuesName(result_from_neo4japi){
