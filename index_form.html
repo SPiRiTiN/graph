@@ -601,13 +601,7 @@ function Hellojs(period){
 	if (period=="CA") { 
 		
 		// reset the dom to just what is needed for this option
-		$("#UserInput").html("");
-		$("#resultBoxDiv").html("");
-		$("#dropdown1").html("");
-		$("#dropdown2").html("");
-		$("#propertyDiv").html("");
-		$("#propertyDivSec").html("");
-		$('#goButton').unbind('click');
+		resetOptionCanvas();
 		
 		var query= {"statements":[{"statement":"match n-[r]-() return distinct n, r","resultDataContents":["graph","row"]}]};
 		UpdateGraphDivOnly(query);
@@ -616,13 +610,7 @@ function Hellojs(period){
 	} else if (period=="VA"){
 	
 	    // reset the dom to just what is needed for this option
-		$("#UserInput").html("");
-		$("#resultBoxDiv").html("");
-		$("#dropdown1").html("");
-		$("#dropdown2").html("");
-		$("#propertyDiv").html("");
-		$("#propertyDivSec").html("");
-		$('#goButton').unbind('click');
+		resetOptionCanvas();
 		
 		var div = $("<div />");
         div.html(makeDropdown(meta_prop_rel, "sec_dd_1"));
@@ -644,11 +632,7 @@ function Hellojs(period){
 			
 			//set the key as the name of the input, and the value as the value of the input
 			dObj[name] = value;
-			/*
-			var div = $("<div />");
-			div.html(dataList(GetDynamicTextBox));
-			$("#propertyDiv").append(div);
-			*/
+			
 			dObj['propertyInput'] = $('#propertyInput').val();
 			
 			console.log(dObj);
@@ -681,13 +665,7 @@ function Hellojs(period){
 		
 		console.log("3");
 		// reset the dom to just what is needed for this option
-		$("#resultBoxDiv").html("");
-		$("#UserInput").html("");
-		$("#dropdown1").html("");
-		$("#dropdown2").html("");
-		$("#propertyDiv").html("");
-		$("#propertyDivSec").html("");
-		$('#goButton').unbind('click');
+		resetOptionCanvas();
 		
 		// query to count total number of nodes in neo4j database
 		var query= {"statements":[{"statement":"START n=node(*) return count(n)","resultDataContents":["graph", "row"]}]};
@@ -697,13 +675,7 @@ function Hellojs(period){
 	} else if (period=="4"){
 		console.log("4");
 		// reset the dom to just what is needed for this option
-		$("#resultBoxDiv").html("");
-		$("#UserInput").html("");
-		$("#dropdown1").html("");
-		$("#dropdown2").html("");
-		$("#propertyDiv").html("");
-		$("#propertyDivSec").html("");
-		$('#goButton').unbind('click');
+		resetOptionCanvas();
 		
 		// query to count total number of relationships in neo4j database
 		var query= {"statements":[{"statement":"START r=rel(*) return count(r)","resultDataContents":["graph", "row"]}]};
@@ -713,15 +685,7 @@ function Hellojs(period){
 	} else if (period=="5"){
 		console.log("5");
 		// reset the dom to just what is needed for this option
-		$("#resultBoxDiv").html("");
-		$("#UserInput").html("");
-		$("#dropdown1").html("");
-		$("#dropdown2").html("");
-		$("#propertyDiv").html("");
-		$("#propertyDivSec").html("");
-		$('#goButton').unbind('click');
-		
-		
+		resetOptionCanvas();
 		
 		var div = $("<div />");
         div.html(makeDropdown(meta_rel, "sec_dd"));
@@ -771,15 +735,7 @@ function Hellojs(period){
 	} else if (period=="6"){
 		console.log("6");
 		// reset the dom to just what is needed for this option
-		$("#resultBoxDiv").html("");
-		$("#UserInput").html("");
-		$("#dropdown1").html("");
-		$("#dropdown2").html("");
-		$("#propertyDiv").html("");
-		$("#propertyDivSec").html("");
-		$('#goButton').unbind('click');
-		
-		
+		resetOptionCanvas();
 		
 		var div = $("<div />");
         div.html(makeDropdown(meta_rel, "sec_dd_1"));
@@ -853,26 +809,12 @@ function Hellojs(period){
 	else if (period=="7"){
 		console.log("7");
 		// reset the dom to just what is needed for this option
-		$("#resultBoxDiv").html("");
-		$("#UserInput").html("");
-		$("#dropdown1").html("");
-		$("#dropdown2").html("");
-		$("#propertyDiv").html("");
-		$("#propertyDivSec").html("");
-		$('#goButton').unbind('click');
-		
-		
-		
+		resetOptionCanvas();
+
 		var div = $("<div />");
         div.html(makeDropdown(meta_prop_node, "sec_dd_1"));
         $("#dropdown1").append(div);
-
-		/*
-		var div = $("<div />");
-        div.html(GetDynamicTextBox());
-        $("#propertyDiv").append(div);
-		*/
-		
+	
 		//create object to pass for both dropdowns and 
 		var dObj = {};
 		dObj['sec_dd_1'] = meta_prop_node[0]; 
@@ -936,15 +878,7 @@ function Hellojs(period){
 	else if (period=="8"){
 		console.log("8");
 		// reset the dom to just what is needed for this option
-		$("#resultBoxDiv").html("");
-		$("#UserInput").html("");
-		$("#dropdown1").html("");
-		$("#dropdown2").html("");
-		$("#propertyDiv").html("");
-		$("#propertyDivSec").html("");
-		$('#goButton').unbind('click');
-		
-		
+		resetOptionCanvas();
 		
 		var div = $("<div />");
         div.html(dataList("name"));
@@ -983,15 +917,7 @@ function Hellojs(period){
 	else if (period=="9"){
 		console.log("9");
 		// reset the dom to just what is needed for this option
-		$("#resultBoxDiv").html("");
-		$("#UserInput").html("");
-		$("#dropdown1").html("");
-		$("#dropdown2").html("");
-		$("#propertyDiv").html("");
-		$("#propertyDivSec").html("");
-		$('#goButton').unbind('click');
-		
-		
+		resetOptionCanvas();
 		
 		var div = $("<div />");
         div.html(dataList("name"));
@@ -1029,16 +955,7 @@ function Hellojs(period){
 	else if (period=="10"){
 		console.log("10");
 		// reset the dom to just what is needed for this option
-		$("#resultBoxDiv").html("");
-		$("#UserInput").html("");
-		$("#dropdown1").html("");
-		$("#dropdown2").html("");
-		$("#propertyDiv").html("");
-		$("#propertyDivSec").html("");
-		$('#goButton').unbind('click');
-		$("#propertyDiv").unbind("change");
-		
-		
+		resetOptionCanvas();
 		
 		var div = $("<div />");	
         div.html(makeDropdown(meta_rel, "sec_dd_1"));
@@ -1111,15 +1028,7 @@ function Hellojs(period){
 	else if (period=="11"){
 		console.log("11");
 		// reset the dom to just what is needed for this option
-		$("#resultBoxDiv").html("");
-		$("#UserInput").html("");
-		$("#dropdown1").html("");
-		$("#dropdown2").html("");
-		$("#propertyDiv").html("");
-		$("#propertyDivSec").html("");
-		$('#goButton').unbind('click');
-		
-		
+		resetOptionCanvas();
 		
 		var div = $("<div />");
         div.html(dataList("name"));
@@ -1169,15 +1078,7 @@ function Hellojs(period){
 	else if (period=="12"){
 		console.log("12");
 		// reset the dom to just what is needed for this option
-		$("#resultBoxDiv").html("");
-		$("#UserInput").html("");
-		$("#dropdown1").html("");
-		$("#dropdown2").html("");
-		$("#propertyDiv").html("");
-		$("#propertyDivSec").html("");
-		$('#goButton').unbind('click');
-		
-		
+		resetOptionCanvas();
 		
 		var div = $("<div />");
         div.html(dataList("name"));
