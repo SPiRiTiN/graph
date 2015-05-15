@@ -120,9 +120,9 @@ var meta_prop_node_weight = [];
 
 
 var dynArray = []; 
-var meta_prop_node_val = {}; 
+var meta_prop_val = {}; 
 var count = 0; 
- var myLength = [];
+var myLength = [];
  
 var colname = []; 
 var colcount = 0; 
@@ -461,10 +461,10 @@ function getDynamicRelProps() {
 	
 	console.log("getDynamicRelProps");
 	
-	for(var i = 0; i < meta_prop_node.length; i++){ 
+	for(var i = 0; i < meta_prop_rel.length; i++){ 
 		var val = meta_prop_rel[i]; 
 		
-		var dynaQuery = '{"statements":[{"statement":" match n-(r)-() return distinct r.' + val + ' as ' + val + ' order by r.' + val + '","resultDataContents":["graph", "row"]}]}'; 
+		var dynaQuery = '{"statements":[{"statement":" match n-[r]-() return distinct r.' + val + ' as ' + val + ' order by r.' + val + '","resultDataContents":["graph", "row"]}]}'; 
 		var dynaQuery_1 = JSON.parse(dynaQuery); 
 		neo4jApiConnect(dynaQuery_1, getPropertyValuesDyn);
 	}				
@@ -480,7 +480,7 @@ function getPropertyValuesDyn(result_from_neo4japi){
 	colname.push(data.results[0].columns[0]); 
 	console.log(colname); 	
 	
-	meta_prop_node_val[colname[colcount]] = [];
+	meta_prop_val[colname[colcount]] = [];
 	
     data.results[0].data.forEach(function(elem) {
 		dynArray.push(elem.row[0]);
@@ -502,12 +502,12 @@ function dynaArrayFunc(){
 	
 	for(var j = 0; j < len ; j++){
 		var dynVar = dynArray[j]
-		meta_prop_node_val[colname[count]].push(dynVar); 
+		meta_prop_val[colname[count]].push(dynVar); 
 	}
 	count = count+1;
 	console.log(count); 
 	console.log("finally"); 	 
-	console.log(meta_prop_node_val);
+	console.log(meta_prop_val);
 }
 
 function makeDropdown(listData, id){
@@ -681,6 +681,7 @@ function Hellojs(period){
 	if(meta_prop_node_name.length==0){
 	//pullPropertyValues();
 	getDynamicNodeProps();
+	getDynamicRelProps();
 	
 	}
 	
