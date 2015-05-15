@@ -39,7 +39,7 @@
 <body>
 <div class="jumbotron">
 <div class="container-fluid">
-	<h2>Ola Neo4j!!</h2>
+	<h1>Ola Neo4j!!</h1>
 	<!-- 
 	<blockquote class="blockquote-reverse">
 	  <p>I'm not interested in possible complexities. I regard song structure as a graph paper.</p>
@@ -93,6 +93,10 @@
     </div> <!-- row div -->
 	
 	<div id=resultBoxDiv>
+	</div>
+	
+	<div id=alertBox>
+	
 	</div>
 
 </div> <!-- container-fluid div -->
@@ -236,10 +240,20 @@ function success(resultFromNeo4jApi){
 	
 	//console.log(data);
 	
-	var nodes_rel_count = data.results[0].data;
+	var nodes_rel_count = data.results[0].data[0];
 	
-	if(nodes_rel_count)  {
+	console.log(nodes_rel_count);
+	
+	if(!nodes_rel_count)  {
 		console.log("No Data Found");
+		
+		$("#alertBox").html('');
+		
+		var div = $("<div />");
+		div.html('<div class="alert alert-success" role="alert"> No Data Found </div>');
+		$("#alertBox").append(div);
+		
+		//$("#alertBox").html("No Valid Graph Found")
 	}
 	
 }
@@ -543,19 +557,7 @@ function dataList(option){
   console.log(option);
   
   listItemsElements = meta_prop_val[option];
-  /*
-  if(option == "name"){
-	var listItemsElements = meta_prop_node_name;
-  } else if (option == "designation"){
-	var listItemsElements = meta_prop_node_designation;
-  } else if (option == "company"){
-	var listItemsElements = meta_prop_node_company;
-  } else if (option == "MPC"){
-	var listItemsElements = meta_prop_node_MPC;
-  } else if (option == "weight"){
-	var listItemsElements = meta_prop_node_weight;
-  }
-  */
+  
   console.log(listItemsElements);
   //console.log(meta_prop_node_val);
   
@@ -687,7 +689,8 @@ function ddordl_Dyn(option){
 } 
 
 function resetOptionCanvas(){
-
+	
+	$("#alertBox").html('');
 	$("#UserInput").html("");
 	$("#resultBoxDiv").html("");
 	$("#dropdown1").html("");
