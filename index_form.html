@@ -492,7 +492,6 @@ function getPropertyValuesDyn(result_from_neo4japi){
 	
 }
 
- 
 
 function dynaArrayFunc(){
 
@@ -509,6 +508,8 @@ function dynaArrayFunc(){
 	console.log("finally"); 	 
 	console.log(meta_prop_val);
 }
+
+/* End - Dynamic helper function */
 
 function makeDropdown(listData, id){
 	
@@ -677,8 +678,8 @@ function resetOptionCanvas(){
 function Hellojs(period){
 	
 	// vip vip vip 
-	
-	if(meta_prop_node_name.length==0){
+
+	if( Object.keys(meta_prop_val).length === 0 ){
 	//pullPropertyValues();
 	getDynamicNodeProps();
 	getDynamicRelProps();
