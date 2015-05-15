@@ -102,8 +102,7 @@
 </div> <!-- container-fluid div -->
 </div> <!-- jumbotron div -->
 
-<div id="alertBox" class="col-md-4 container-fluid"></div>
-
+<div id="alertBox" class="container-fluid"></div>
 
 <div id=graphArea></div>
 
@@ -252,13 +251,13 @@ function success(resultFromNeo4jApi){
 		console.log("No Data Found");
 		
 		$("#alertBox").html('');
-		$("#resultBoxDiv").html('');
+		$("#graphArea").html('');
 		
 		
 		//var div = $("<div />");
 		//div.html('<div class="alert alert-success" role="alert"> No Data Found </div>');
 		
-		$("#alertBox").html('<div class="alert alert-success"> No Data Found </div>');
+		$("#alertBox").html('<div class="alert alert-success"> <strong> No Valid Graph Exists </strong></div>');
 		
 		//$("#alertBox").html("No Valid Graph Found")
 	}
