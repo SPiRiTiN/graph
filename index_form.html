@@ -445,12 +445,26 @@ neo4jApiConnect(query_3, getMetadataRel);
 
 function getDynamicNodeProps() { 
 	
-	console.log("in dynamic function");
+	console.log("getDynamicNodeProps");
 	
 	for(var i = 0; i < meta_prop_node.length; i++){ 
 		var val = meta_prop_node[i]; 
 		console.log("in dynamic function"); 
-		var dynaQuery = '{"statements":[{"statement":" match n return distinct n.' + val + ' order by n.' + val + '","resultDataContents":["graph", "row"]}]}'; 
+		var dynaQuery = '{"statements":[{"statement":" match n return distinct n.' + val + ' as ' + val + ' order by n.' + val + '","resultDataContents":["graph", "row"]}]}'; 
+		var dynaQuery_1 = JSON.parse(dynaQuery); 
+		neo4jApiConnect(dynaQuery_1, getPropertyValuesDyn);
+	}				
+}
+
+
+function getDynamicRelProps() { 
+	
+	console.log("getDynamicRelProps");
+	
+	for(var i = 0; i < meta_prop_node.length; i++){ 
+		var val = meta_prop_rel[i]; 
+		
+		var dynaQuery = '{"statements":[{"statement":" match n-(r)-() return distinct r.' + val + ' as ' + val + ' order by r.' + val + '","resultDataContents":["graph", "row"]}]}'; 
 		var dynaQuery_1 = JSON.parse(dynaQuery); 
 		neo4jApiConnect(dynaQuery_1, getPropertyValuesDyn);
 	}				
@@ -461,9 +475,11 @@ function getPropertyValuesDyn(result_from_neo4japi){
     dynArray.length = 0; 
 	
 	var data = result_from_neo4japi;
-	console.log(data); 
+	//console.log(data); 
+	
 	colname.push(data.results[0].columns[0]); 
 	console.log(colname); 	
+	
 	meta_prop_node_val[colname[colcount]] = [];
 	
     data.results[0].data.forEach(function(elem) {
@@ -479,6 +495,7 @@ function getPropertyValuesDyn(result_from_neo4japi){
  
 
 function dynaArrayFunc(){
+
 	//console.log(dynArray.length);
 	var len = dynArray.length; 
 	console.log(len); 
