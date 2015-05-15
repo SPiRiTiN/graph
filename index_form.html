@@ -665,12 +665,23 @@ if(option == "name"){
 
 
 function ddordl_Dyn(option){
-
-	$("#propertyDiv").html('');
-	var div = $("<div />");
-    div.html(makeDropdown(meta_prop_val[option], 'propertyInput'));
-    $("#propertyDiv").append(div);
 	
+	if(meta_prop_val[option].length <= 10){
+		$("#propertyDiv").html('');
+		var div = $("<div />");
+		div.html(makeDropdown(meta_prop_val[option], 'propertyInput'));
+		$("#propertyDiv").append(div);
+	
+	
+	} else {
+	
+		$("#propertyDiv").html('');
+		var div = $("<div />");
+		div.html(dataList("name"));
+		$("#propertyDiv").append(div);
+	
+	}
+
 } 
 
 function resetOptionCanvas(){
