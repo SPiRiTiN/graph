@@ -123,6 +123,9 @@ var dynArray = [];
 var meta_prop_node_val = {}; 
 var count = 0; 
  var myLength = [];
+ 
+var colname = []; 
+var colcount = 0; 
 
 function GetDynamicTextBox(value) {
 	return '<input type="text" class="form-control" id=propertyInput placeholder="Property Value">'
@@ -441,7 +444,9 @@ neo4jApiConnect(query_3, getMetadataRel);
 /* Putting all the dynamic helper function */
 
 function getDynamicNodeProps() { 
+	
 	console.log("in dynamic function");
+	
 	for(var i = 0; i < meta_prop_node.length; i++){ 
 		var val = meta_prop_node[i]; 
 		console.log("in dynamic function"); 
@@ -477,7 +482,7 @@ function dynaArrayFunc(){
 	//console.log(dynArray.length);
 	var len = dynArray.length; 
 	console.log(len); 
-	 
+	
 	for(var j = 0; j < len ; j++){
 		var dynVar = dynArray[j]
 		meta_prop_node_val[colname[count]].push(dynVar); 
@@ -657,7 +662,9 @@ function Hellojs(period){
 	// vip vip vip 
 	
 	if(meta_prop_node_name.length==0){
-	pullPropertyValues();
+	//pullPropertyValues();
+	getDynamicNodeProps();
+	
 	}
 	
 	
@@ -1445,6 +1452,7 @@ function init(){
 	
 	// Pull meta data from database
 	getMetadataDriver();
+	
 	
 	// set Go button event handler to load entire graph which is default option of main dropdown
 	var query_init= {"statements":[{"statement":"match n-[r]-() return distinct n, r","resultDataContents":["graph","row"]}]};
