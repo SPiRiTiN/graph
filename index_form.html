@@ -542,6 +542,8 @@ function dataList(option){
   
   console.log(option);
   
+  listItemsElements = meta_prop_val[option];
+  /*
   if(option == "name"){
 	var listItemsElements = meta_prop_node_name;
   } else if (option == "designation"){
@@ -553,7 +555,7 @@ function dataList(option){
   } else if (option == "weight"){
 	var listItemsElements = meta_prop_node_weight;
   }
-  
+  */
   console.log(listItemsElements);
   //console.log(meta_prop_node_val);
   
@@ -677,7 +679,7 @@ function ddordl_Dyn(option){
 	
 		$("#propertyDiv").html('');
 		var div = $("<div />");
-		div.html(dataList("name"));
+		div.html(dataList(option));
 		$("#propertyDiv").append(div);
 	
 	}
@@ -1086,7 +1088,7 @@ function Hellojs(period){
 		
 		console.log(dObj['sec_dd_2']);
 		
-		ddordl(dObj['sec_dd_2']);
+		ddordl_Dyn(dObj['sec_dd_2']);
 		
 		$('#mainForm').find('#sec_dd_1, #sec_dd_2').on('change', function (event){
 
@@ -1098,7 +1100,7 @@ function Hellojs(period){
 			//set the key as the name of the input, and the value as the value of the input
 			dObj[name] = value;
 			
-			ddordl(dObj['sec_dd_2']);
+			ddordl_Dyn(dObj['sec_dd_2']);
 			
 		});
 
