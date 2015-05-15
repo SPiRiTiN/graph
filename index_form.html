@@ -663,6 +663,16 @@ if(option == "name"){
  
 } 
 
+
+function ddordl_Dyn(option){
+
+	$("#propertyDiv").html('');
+	var div = $("<div />");
+    div.html(makeDropdown(meta_prop_val[option], 'propertyInput'));
+    $("#propertyDiv").append(div);
+	
+} 
+
 function resetOptionCanvas(){
 
 	$("#UserInput").html("");
