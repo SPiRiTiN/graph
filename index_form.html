@@ -866,7 +866,7 @@ function Hellojs(period){
 		dObj['sec_dd_2'] = meta_prop_rel[0];
 		dObj['propertyInput'] = "";
 		
-		ddordl(dObj['sec_dd_2']);
+		ddordl_Dyn(dObj['sec_dd_2']);
 		
 		$('#mainForm').find('#sec_dd_1, #sec_dd_2').on('change', function (event){
 
@@ -878,7 +878,7 @@ function Hellojs(period){
 			//set the key as the name of the input, and the value as the value of the input
 			dObj[name] = value;
 			
-			ddordl(dObj['sec_dd_2']);
+			ddordl_Dyn(dObj['sec_dd_2']);
 			
 		});
 
@@ -936,7 +936,7 @@ function Hellojs(period){
 		
 		dObj['propertyInput'] = "";
 		
-		ddordl(dObj['sec_dd_1']);
+		ddordl_Dyn(dObj['sec_dd_1']);
 		
 		$('#mainForm').find('#sec_dd_1').on('change', function (event){
 		
@@ -947,7 +947,7 @@ function Hellojs(period){
 			//set the key as the name of the input, and the value as the value of the input
 			dObj[name] = value;
 			
-			ddordl(dObj['sec_dd_1']);
+			ddordl_Dyn(dObj['sec_dd_1']);
 
 		});
 		
